@@ -566,7 +566,7 @@ void CSGO::updateAimBot(const std::vector<Player*>& allPlayers)
 		// 获取目标和我的向量
 		float x = player.skeletonHead[0] - m_localPlayer->pos[0];
 		float y = player.skeletonHead[1] - m_localPlayer->pos[1];
-		float z = player.skeletonHead[2] - m_localPlayer->pos[2] - 63.f;// 63是个优化的值，目的是定位到人物的摄像机位置
+		float z = player.skeletonHead[2] - m_localPlayer->pos[2] - 70.f;// 63是个优化的值，目的是定位到人物的摄像机位置
 		float length = (float)(sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2)));
 
 
