@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\cheat_base">
+      <UniqueIdentifier>{86e4e44f-f959-42d2-9a57-6d3dd9f4bede}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\cheat_base\imgui">
+      <UniqueIdentifier>{f55d2058-c468-4b20-b7d7-f3adee0b6fba}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="csgo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cheat_base\utils.cpp">
+      <Filter>Source Files\cheat_base</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cheat_base\process_mamager.cpp">
+      <Filter>Source Files\cheat_base</Filter>
+    </ClCompile>
+    <ClCompile Include="cheat_base\imgui\imgui.cpp">
+      <Filter>Source Files\cheat_base\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="cheat_base\imgui\imgui_demo.cpp">
+      <Filter>Source Files\cheat_base\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="cheat_base\imgui\imgui_draw.cpp">
+      <Filter>Source Files\cheat_base\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="cheat_base\imgui\imgui_tables.cpp">
+      <Filter>Source Files\cheat_base\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="cheat_base\imgui\imgui_widgets.cpp">
+      <Filter>Source Files\cheat_base\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="cheat_base\imgui\imgui_impl_dx12.cpp">
+      <Filter>Source Files\cheat_base\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="cheat_base\imgui\imgui_impl_win32.cpp">
+      <Filter>Source Files\cheat_base\imgui</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="cheat_base\utils.h">
+      <Filter>Source Files\cheat_base</Filter>
+    </ClInclude>
+    <ClInclude Include="csgo.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="csgo_def.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cheat_base\process_mamager.h">
+      <Filter>Source Files\cheat_base</Filter>
+    </ClInclude>
+    <ClInclude Include="cheat_base\imgui\imconfig.h">
+      <Filter>Source Files\cheat_base\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="cheat_base\imgui\imgui.h">
+      <Filter>Source Files\cheat_base\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="cheat_base\imgui\imgui_internal.h">
+      <Filter>Source Files\cheat_base\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="cheat_base\imgui\imgui_impl_dx12.h">
+      <Filter>Source Files\cheat_base\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="cheat_base\imgui\imstb_rectpack.h">
+      <Filter>Source Files\cheat_base\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="cheat_base\imgui\imstb_textedit.h">
+      <Filter>Source Files\cheat_base\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="cheat_base\imgui\imstb_truetype.h">
+      <Filter>Source Files\cheat_base\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="cheat_base\imgui\imgui_impl_win32.h">
+      <Filter>Source Files\cheat_base\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="cheat_base\thread.h">
+      <Filter>Source Files\cheat_base</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
