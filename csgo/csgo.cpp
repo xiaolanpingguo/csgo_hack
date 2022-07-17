@@ -22,7 +22,7 @@ CSGO::CSGO()
 	, m_esp(true)
 	, m_aimbot(false)
 {
-	m_localPlayer = &m_allPlayers[0];
+	m_localPlayer = nullptr;
 }
 
 CSGO::~CSGO()
@@ -257,7 +257,15 @@ void CSGO::updateGame()
 		return;
 	}
 
+	// get local player
+	std::uintptr_t localPlayerAddress = 0;
+	if (!Utils::readMemory(m_gameHandle, m_localPlayerAddress, &localPlayerAddress, sizeof(localPlayerAddress)) || localPlayerAddress == 0)
+	{
+		return;
+	}
+
 	std::vector<Player*> enemies;
+	std::vector<Player*> allPlayers;
 	for (size_t i = 0; i < m_allPlayers.size(); ++i)
 	{
 		Player& player = m_allPlayers[i];
@@ -269,7 +277,12 @@ void CSGO::updateGame()
 			continue;
 		}
 
-		Utils::readMemory(m_gameHandle, playerAddress + PLAYER_TEAM_FLAG, &player.camp, sizeof(player.camp));
+		if (localPlayerAddress == playerAddress)
+		{
+			m_localPlayer = &player;
+		}
+
+		Utils::readMemory(m_gameHandle, playerAddress + PLAYER_TEAM_FLAG, &player.team, sizeof(player.team));
 		Utils::readMemory(m_gameHandle, playerAddress + PLAYER_POS, &player.pos, sizeof(player.pos));
 		Utils::readMemory(m_gameHandle, playerAddress + PLAYER_MIRRO, &player.mirror, sizeof(player.mirror));
 		Utils::readMemory(m_gameHandle, playerAddress + PLAYER_COMMAND, &player.cmd, sizeof(player.cmd));
@@ -285,21 +298,16 @@ void CSGO::updateGame()
 			Utils::readMemory(m_gameHandle, skeletonBase + PLAYER_SKELETON_HEAD_Z, &player.skeletonHead[2], sizeof(float));
 		}
 
-		// will not draw myself
-		if (m_localPlayer == &player)
-		{
-			continue;
-		}
-
-		if (player.camp != m_localPlayer->camp)
-		{
-			enemies.emplace_back(&player);
-		}
-
-		updateESP(player);
+		allPlayers.emplace_back(&player);
 	}
 
-	updateAimBot(enemies);
+	if (m_localPlayer == nullptr)
+	{
+		return;
+	}
+
+	updateESP(allPlayers);
+	updateAimBot(allPlayers);
 
 	// trigger WM_PAINT message
 	::InvalidateRect(m_mainWnd, nullptr, true);
@@ -479,6 +487,7 @@ bool CSGO::readGameGlobalData()
 	}
 
 	m_viewAngleAddress = angleBase + ENGINE_VISUAL_VIEW_ANGLE;
+	m_localPlayerAddress = m_clientModule.address + LOCAL_PLAYER;
 
 	LOG_INFO("CSGOGameManager::init success!,client.dll base: %x!, server.dll base:%x, engine.dll base:%x, team address:%x, matrix address:%x, "
 		"m_viewAddress:%x, pitch:%f, yaw:%f\n",
@@ -488,44 +497,47 @@ bool CSGO::readGameGlobalData()
 	return true;
 }
 
-void CSGO::updateESP(const Player& player)
+void CSGO::updateESP(const std::vector<Player*>& allPlayers)
 {
 	if (!m_esp)
 	{
 		return;
 	}
 
-	if (player.hp <= 0)
+	for (size_t i = 0; i < allPlayers.size(); ++i)
 	{
-		return;
+		Player& player = *allPlayers[i];
+
+		if (&player == m_localPlayer
+			|| player.hp <= 0
+			|| m_localPlayer->team == player.team
+			)
+		{
+			continue;
+		}
+
+		int screenSkeletonHeadx = 0, screenSkeletonHeady = 0;
+		Utils::worldToSceenDX(m_viewProMatrix, player.skeletonHead, m_gameWindowWidth, m_gameWindowHeight, screenSkeletonHeadx, screenSkeletonHeady);
+
+		int screenx = 0, screeny = 0;
+		Utils::worldToSceenDX(m_viewProMatrix, player.pos, m_gameWindowWidth, m_gameWindowHeight, screenx, screeny);
+
+		int playerHeight = screeny - screenSkeletonHeady;
+		int playerWidth = int(playerHeight / 2); // 假设人物的模型宽度是身高的一半
+		int extra = playerHeight / 6;  // 目前位置大概是嘴唇位置，增加少许高度把矩阵上边画在超过头的位置
+		ESPData::RenderData esp;
+		esp.rect.left = screenx - playerWidth / 2;
+		esp.rect.top = screenSkeletonHeady - extra; //(screenSkeletonHeady - extra) < 0 ? 0 : screenSkeletonHeady - extra;
+		esp.rect.right = esp.rect.left + playerWidth;
+		esp.rect.bottom = esp.rect.top + playerHeight + extra;
+		esp.color = m_localPlayer->team == player.team ? ESPData::s_blueRectangle : ESPData::s_redRectangle;
+		esp.textHP = std::to_string(player.hp);
+
+		m_espData.data.push_back(esp);
 	}
-
-	if (m_localPlayer->camp == player.camp)
-	{
-		return;
-	}
-
-	int screenSkeletonHeadx = 0, screenSkeletonHeady = 0;
-	Utils::worldToSceenDX(m_viewProMatrix, player.skeletonHead, m_gameWindowWidth, m_gameWindowHeight, screenSkeletonHeadx, screenSkeletonHeady);
-
-	int screenx = 0, screeny = 0;
-	Utils::worldToSceenDX(m_viewProMatrix, player.pos, m_gameWindowWidth, m_gameWindowHeight, screenx, screeny);
-
-	int playerHeight = screeny - screenSkeletonHeady;
-	int playerWidth = int(playerHeight / 2); // 假设人物的模型宽度是身高的一半
-	int extra = playerHeight / 6;  // 目前位置大概是嘴唇位置，增加少许高度把矩阵上边画在超过头的位置
-	ESPData::RenderData esp;
-	esp.rect.left = screenx - playerWidth / 2;
-	esp.rect.top = screenSkeletonHeady - extra; //(screenSkeletonHeady - extra) < 0 ? 0 : screenSkeletonHeady - extra;
-	esp.rect.right = esp.rect.left + playerWidth;
-	esp.rect.bottom = esp.rect.top + playerHeight + extra;
-	esp.color = m_localPlayer->camp == player.camp ? ESPData::s_blueRectangle : ESPData::s_redRectangle;
-	esp.textHP = std::to_string(player.hp);
-
-	m_espData.data.push_back(esp);
 }
 
-void CSGO::updateAimBot(const std::vector<Player*>& enemies)
+void CSGO::updateAimBot(const std::vector<Player*>& allPlayers)
 {
 	if (!m_aimbot)
 	{
@@ -533,7 +545,7 @@ void CSGO::updateAimBot(const std::vector<Player*>& enemies)
 	}
 
 	// 没有攻击或者没开镜的时候，不触发自瞄
-	if ((m_localPlayer->cmd & 1) == 0 && (m_localPlayer->mirror >= 90 || m_localPlayer->mirror <= 0))
+	if ((m_localPlayer->cmd & 1) == 0 && (m_localPlayer->mirror >= 90 || m_localPlayer->mirror <= 0 || m_localPlayer->hp <= 0))
 	{
 		return;
 	}
@@ -542,11 +554,11 @@ void CSGO::updateAimBot(const std::vector<Player*>& enemies)
 
 	struct Angles { float pitch{}; float yaw{}; };
 	std::map<float, Angles> sortEnemies;
-	for (size_t i = 0; i < enemies.size(); ++i)
+	for (size_t i = 0; i < allPlayers.size(); ++i)
 	{
-		Player& player = *enemies[i];
+		Player& player = *allPlayers[i];
 
-		if (player.camp == m_localPlayer->camp || player.hp <= 0 || m_localPlayer->hp <= 0)
+		if (player.team == m_localPlayer->team || player.hp <= 0)
 		{
 			continue;
 		}

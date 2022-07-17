@@ -8,7 +8,7 @@ static constexpr const wchar_t* CSGO_CLIENT_DLL_NAME = L"client.dll";
 static constexpr const wchar_t* CSGO_SERVER_DLL_NAME = L"server.dll";
 static constexpr const wchar_t* CSGO_ENGINE_DLL_NAME = L"engine.dll";
 
-// 人物数组基址，第一个元素代表自己
+// 人物数组基址
 // 特征码：EB ?? 8B4B ?? 83F9 FF 74 ?? 0FB7C1C1E0 ?? 05 ??
 #define TEAMS_BASE				0x4DDB8FC
 
@@ -32,6 +32,7 @@ static constexpr const wchar_t* CSGO_ENGINE_DLL_NAME = L"engine.dll";
 #define ENGINE_VISUAL_ANGLE_BASE		0x58CFDC	// 角度偏移base
 #define ENGINE_VISUAL_VIEW_ANGLE		0x4d90		// pitch,yaw float[2]
 #define ENGINE_CAMERA_MATRIX			0x4DCD214	// 摄像机view-projection矩阵基址
+#define LOCAL_PLAYER					0x5284028
 
 
 

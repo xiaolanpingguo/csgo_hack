@@ -10,7 +10,7 @@ struct Player
 {
 	float pos[3]{};				// 位置
 	float skeletonHead[3]{};	// 头骨位置
-	int camp = 0;				// 阵营
+	int team = 0;				// 阵营
 	int hp = 0;					// 血量
 	int mirror = 0;				// 是否开镜
 	int cmd = 0;				// 动作类型，32位，每一位代表一个动作，第一位是攻击
@@ -73,8 +73,8 @@ private:
 	bool updateGameSignature();
 	bool readGameGlobalData();
 	void updateGame();
-	void updateESP(const Player& player);
-	void updateAimBot(const std::vector<Player*>& enemies);
+	void updateESP(const std::vector<Player*>& allPlayers);
+	void updateAimBot(const std::vector<Player*>& allPlayers);
 
 private:
 
@@ -97,6 +97,7 @@ private:
 	std::uintptr_t m_teamAddress;
 	std::uintptr_t m_matrixAddress;
 	std::uintptr_t m_viewAngleAddress;
+	std::uintptr_t m_localPlayerAddress;
 
 	// matrix
 	float m_viewProMatrix[16]{};
